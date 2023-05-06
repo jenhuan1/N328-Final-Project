@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Final Project - Countries' Population</title>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <link type="text/css" rel="stylesheet" href="www/css/index.css" />
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- navigation bar -->
+        <div id="navbar">
+            <a href="index.html">Home</a>  || <a href="documentation.html">Documentation</a> || <a href="https://www.youtube.com/watch?v=Uotxh6DKu7Q">Video</a>
+         </div>
+
+         <!-- Logo image and banner text -->
+        <div id="banner">
+            <div class="logo">
+                <img src="www/img/world_pop.jpeg" alt="World Population">
+            </div>
+            <div class="banner-text">
+                <div id="maintitle">Countries' Population</div>
+            </div>
+        </div>      
+    </div>
+    <!-- Add 2 buttons -->
+    <button onclick="buttonVal = 'Density'; update(density)">Density</button>
+    <button onclick="buttonVal = 'Population'; update(population)">Population</button>
+    <div id="my_dataviz"></div>
+<script>
+    var buttonVal = 'Density';
+
+    // create 2 data_set
+    var density = [
+        {group: "Afghanistan", value: 60},
+        {group: "South Africa", value: 49},
+        {group: "Argentina", value: 17},
+        {group: "Australia", value: 3},
+        {group: "Brazil", value: 25},
+        {group: "China", value: 153},
+        {group: "Colombia", value: 46},
+        {group: "Egypt", value: 103},
+        {group: "France", value: 119},
+        {group: "Germany", value: 240},
+        {group: "India", value: 464},
+        {group: "Indonesia", value: 151},
+        {group: "Iran", value: 52},
+        {group: "Iraq", value: 93},
+        {group: "Italy", value: 206},
+        {group: "Japan", value: 347},
+        {group: "North Korea", value: 214},
+        {group: "South Korea", value: 527},
+        {group: "Malaysia", value: 99},
+        {group: "Mexico", value: 66},
+        {group: "Peru", value: 26},
+        {group: "Philippines", value: 368},
+        {group: "Poland", value: 124},
+        {group: "Russia", value: 9},
+        {group: "Saudi Arabia", value: 16},
+        {group: "Spain", value: 94},
+        {group: "Thailand", value: 137},
+        {group: "Turkey", value: 110},
+        {group: "Uganda", value: 229},
+        {group: "Ukraine", value: 75},
+        {group: "United Kingdom", value: 281},
+        {group: "United States", value: 36},
+        {group: "Venezuela", value: 32},
+        {group: "Vietnam", value: 314},
+        ];
+
+    var population = [
+        {group: "Afghanistan", value: 39074280},
+        {group: "South Africa", value: 59436725},
+        {group: "Argentina", value: 45267449},
+        {group: "Australia", value: 25550683},
+        {group: "Brazil", value: 212821986},
+        {group: "China", value: 1440297825},
+        {group: "Colombia", value: 50976248},
+        {group: "Egypt", value: 102659126},
+        {group: "France", value: 65298930},
+        {group: "Germany", value: 83830972},
+        {group: "India", value: 1382345085},
+        {group: "Indonesia", value: 274021604},
+        {group: "Iran", value: 84176929},
+        {group: "Iraq", value: 40372771},
+        {group: "Italy", value: 60446035},
+        {group: "Japan", value: 126407422},
+        {group: "North Korea", value: 25798588},
+        {group: "South Korea", value: 51276977},
+        {group: "Malaysia", value: 32436963},
+        {group: "Mexico", value: 129166028},
+        {group: "Peru", value: 33050211},
+        {group: "Philippines", value: 109830324},
+        {group: "Poland", value: 37839255},
+        {group: "Russia", value: 145945524},
+        {group: "Saudi Arabia", value: 34905942},
+        {group: "Spain", value: 46757980},
+        {group: "Thailand", value: 69830779},
+        {group: "Turkey", value: 84495243},
+        {group: "Uganda", value: 45974931},
+        {group: "Ukraine", value: 43686577},
+        {group: "United Kingdom", value: 67948282},
+        {group: "United States", value: 331341050},
+        {group: "Venezuela", value: 28421581},
+        {group: "Vietnam", value: 97490013},
+        ];
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 20, right: 30, bottom: 40, left: 90},
+        width = 460 - margin.left - margin.right,
+        height = 495 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    
+    // A function that update the plot for a given variable:
+    function update(data) {
+        console.log(buttonVal);
+
+        if(buttonVal == 'Density') {
+            // Domain for density code here
+            var x = d3.scaleLinear()
+                .domain([0, 600]);
+        }
+        else if(buttonVal == 'Population') {
+            // Domain for population code here
+            var x = d3.scaleLinear()
+                .domain([0, 10000000000]);
+        }
+        
+    
+        // X axis
+        var x = d3.scaleLinear()
+                .range([ 0, width]);
+            x.domain([0, d3.max(data, function(d) { return +d.value }) ]);
+
+        // Y axis
+        var y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(data.map(function(d) { return d.group; }))
+            .padding(.1);
+        y.domain(data.map(function(d) { return d.group; }))
+
+        // variable u: map data to existing bars
+        var u = svg.selectAll("rect")
+            .data(data)
+
+        // update bars
+        u
+            .enter()
+            .append("rect")
+            .merge(u)
+            .transition()
+            
+            .duration(1000)
+                .attr("x", function(d) { return x(d[data]); })
+                .attr("y", function(d) { return y(d.group); })
+                .attr("width", function(d) { return width - x(d.value); })
+                .attr("height", y.bandwidth() )
+                .attr("fill", "#69b3a2")
+        // })
+    }   
+    // Parse the Data
+    d3.csv("population.csv", function(data) {
+
+    // Add X axis
+     var x = d3.scaleLinear()
+        .domain([0, (600)])
+        .range([ 0, width]);
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end");
+
+     // Y axis
+    var y = d3.scaleBand()
+        .range([ 0, height ])
+        .domain(data.map(function(d) { return d.Country; }))
+        .padding(.1);
+    svg.append("g")
+        .call(d3.axisLeft(y))
+
+    // bars
+    svg.selectAll("myRect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", x(0) )
+        .attr("y", function(d) { return y(d.Country); })
+        .attr("width", function(d) { return x(d.Density); })
+        .attr("height", y.bandwidth() )
+        .attr("fill", "#69b3a2")
+
+    // initialize plot
+    update(density)
+})
+
+</script>
+    </body>
+</html>
